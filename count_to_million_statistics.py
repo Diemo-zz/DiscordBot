@@ -1,5 +1,7 @@
 import discord
 import datetime
+import os
+token = os.environ["DISCORD_BOT_TOKEN"]
 
 client = discord.Client()
 
@@ -13,7 +15,7 @@ async def on_message(message):
         non_bot_messages = list(filter(lambda x: x.author != client.user, messages))
         msg += f"There have been {len(non_bot_messages)} non-bot messages in the channel. \n"
         msg += await count_posts(non_bot_messages)
-        if message.channel.id == 785962469579423845:
+        if message.channel.id in [785962469579423845, 763510316290015322]: # test channel, count to a milliion channel
             bad_posts = await get_bad_posts(non_bot_messages)
             msg += f"There have been {bad_posts} posts which do not contain an integer posted in this channel."
         await message.channel.send(msg)
@@ -63,4 +65,4 @@ async def count_posts(non_bot_messages):
     return msg
 
 
-client.run("NzcxMDU4MDA5NDU0NDExODU3.X5mluw.Bhs5DcA320cFp_ECiMQtNNp9VtU")
+client.run(token)
