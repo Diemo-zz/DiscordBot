@@ -16,6 +16,13 @@ async def on_message(message):
         msg += f"There have been {len(non_bot_messages)} non-bot messages in the channel. \n"
         msg += await count_posts(non_bot_messages)
         if message.channel.id in [785962469579423845, 763510316290015322]: # test channel, count to a milliion channel
+            my_messages = list(filter(lambda x: x.author == client.user, messages))
+            my_last_message = my_messages[-1]
+            current_time = datetime.datetime.now()
+            my_last_message_time = my_last_message.created_at
+            time_difference = my_last_message_time - current_time
+            if time_difference.days < 1:
+                return
             bad_posts = await get_bad_posts(non_bot_messages)
             msg += f"There have been {bad_posts} posts which do not contain an integer posted in this channel. - Likely gifs, because I can't handle them."
             split_message = message.content.split()
