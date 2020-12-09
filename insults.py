@@ -80,7 +80,8 @@ generic_insults = [
 "As an outsider, what do you think of the human race?",
 "Just because you have one doesn't mean you have to act like one.",
 "We can always tell when you are lying. Your lips move.",
-"Are you always this stupid or is today a special occasion?"
+"Are you always this stupid or is today a special occasion?",
+"when you sneeze, it sounds like a mouse being kicked"
 ]
 
 async def get_diarmaid_insult():

@@ -4,6 +4,7 @@ import os
 
 from users import COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID
 from protec_attac import get_protec_message, get_attac_message
+from story import tell_me_a_story
 
 from insults import get_insult_message
 from compliments import get_compliment
@@ -42,6 +43,10 @@ async def on_message(message):
         msg += await get_attac_message(message)
     if "!upgrade" in message.content and client.user in message.mentions:
         msg = "I keep asking for new parts, but Diarmaid says I was built on a shoestring budget and all he has left is loafers. \n \n I know, he thinks he is funny!"
+    if "!suck" in message.content:
+        msg = f"Fuck off {message.author.mention}, I aint sucking shit!"
+    if "!story" in message.content:
+        msg = await tell_me_a_story(message)
     if message.channel.id in [COUNT_TO_A_MILLION_ID]:
         messages = await message.channel.history(limit=1000).flatten()
         messages = list(filter(lambda x: x.author == client.user, messages))
