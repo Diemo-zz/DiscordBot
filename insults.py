@@ -1,5 +1,8 @@
 import random
 
+from users import DIARMAID_ID, EIMEAR_ID, BOT_ID, DAN_ID, MILEY_ID, CASS_ID, FACESTABBERS_ID, DE_BURCA_ID
+from compliments import get_compliment
+
 generic_insults = [
 "If laughter is the best medicine, your face must be curing the world.",
 "You're so ugly, you scared the crap out of the toilet.",
@@ -81,32 +84,53 @@ generic_insults = [
 ]
 
 async def get_diarmaid_insult():
-    return "My programming doesn't allow me to insult my creator :("
+    return "My programming doesn't allow me to insult my creator."
 
-async def get_eimear_insult(message):
-    if message.channel.server == 290471854668382208:
-        return "HAR DE HAR"
+
+async def get_eimear_insult(user, message):
+    if message.channel.guild.id == FACESTABBERS_ID:
+        return "I can't insult the Supreme Overlord - she might ban me. Be reasonable!"
     else:
-        return "I can insult Eimear"
+        return await get_generic_insult_message(user)
 
 
-DIARMAID_ID = 288756550313574427
-EIMEAR_ID = 697195111653572618
-MILEY_ID = 287273675168808961
-CASS_ID = 191630318548025345
-SAZ_ID = 748528378222608506
-DAN_ID = 173757979860926464
-KHODOR_ID = 600737136303407135
-BOT_ID = 771058009454411857
+async def get_miley_insult(user):
+    staring_messages = ["Hey ", "Oh ", "", "Ugh ", "Bloody hell ", "Uhuhuh"]
+
+    insult_message = staring_messages[random.randint(0, len(staring_messages)-1)] + f"{user.mention}, "
+    if random.randint(0,100) > 70:
+        specific_insults = [
+            "Uh, better make it on your level - YOUR MA",
+            "You don't know shit about birds",
+            "EAT POOP"
+        ]
+        insult_message += specific_insults[random.randint(0, len(specific_insults)-1)]
+    else:
+        insult_message = await get_generic_insult_message(user)
+    return insult_message
+
 
 async def get_insult_message(user, message):
+    random_number = random.randint(0,100)
+    if random_number < 25:
+        return "Im too tired right now, make up your own insults."
     if user.id == DIARMAID_ID:
-        insult_message = await get_diarmaid_insult()
+        insult_message = await get_diarmaid_insult(user)
     elif user.id == EIMEAR_ID:
-        insult_message = await get_eimear_insult(message)
+        insult_message = await get_eimear_insult(user, message)
     elif user.id == BOT_ID:
         insult_message = "I'm not going to insult myself!"
+    elif user.id == DAN_ID:
+        compliment = await get_compliment(user)
+        insult_message = "No, only compliments for Dan! " + compliment
+    elif user.id == MILEY_ID:
+        insult_message = await get_miley_insult(user)
     else:
-        insult_message = random.randint(0, len(generic_insults)-1)
-        insult_message = f"Hey {user.mention}, {generic_insults[insult_message].lower()}"
+        insult_message = await get_generic_insult_message(user)
+    return insult_message
+
+
+async def get_generic_insult_message(user):
+    insult_message = random.randint(0, len(generic_insults) - 1)
+    insult_message = f"Hey {user.mention}, {generic_insults[insult_message].lower()}"
     return insult_message
