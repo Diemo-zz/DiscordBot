@@ -17,7 +17,19 @@ async def on_message(message):
         msg += await count_posts(non_bot_messages)
         if message.channel.id in [785962469579423845, 763510316290015322]: # test channel, count to a milliion channel
             bad_posts = await get_bad_posts(non_bot_messages)
-            msg += f"There have been {bad_posts} posts which do not contain an integer posted in this channel."
+            msg += f"There have been {bad_posts} posts which do not contain an integer posted in this channel. - Likely gifs, because I can't handle them."
+            split_message = message.content.split()
+            last_integer = None
+            for c in split_message:
+                try:
+                    x = int(c)
+                    last_integer = x
+                except:
+                    pass
+            if last_integer is not None:
+                msg = f"The next number is: {last_integer + 1} \n" + msg
+            else:
+                return
         await message.channel.send(msg)
 
 async def get_bad_posts(messages):
@@ -46,9 +58,6 @@ async def count_posts(non_bot_messages):
     first_message = non_bot_messages[-1]
     last_message = non_bot_messages[0]
     number_of_messages = len(non_bot_messages)
-    million_messages_time = 1e6 / (
-                number_of_messages / max(1, (last_message.created_at - first_message.created_at).days))
-    in_days = datetime.timedelta(days=million_messages_time)
     authors = await authors
     msg = ""
     msg += f"The first message was sent on {first_message.created_at} and the last message was sent on {last_message.created_at}. \n"
