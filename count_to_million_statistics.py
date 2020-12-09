@@ -1,6 +1,9 @@
 import discord
 import datetime
 import os
+
+from insults import get_insult_message
+
 token = os.environ["DISCORD_BOT_TOKEN"]
 
 client = discord.Client()
@@ -38,6 +41,12 @@ async def on_message(message):
             else:
                 return
         await message.channel.send(msg)
+    if "!insult" in message.content:
+        users_to_insult = message.mentions
+        for user in users_to_insult:
+            insult_message = await get_insult_message(user, message)
+            await message.channel.send(insult_message)
+
 
 async def get_bad_posts(messages):
     bad_posts = 0
