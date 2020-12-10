@@ -3,6 +3,8 @@ import random
 from users import DIARMAID_ID, EIMEAR_ID, BOT_ID, DAN_ID, MILEY_ID, CASS_ID, FACESTABBERS_ID, DE_BURCA_ID
 from compliments import get_compliment
 
+from base_bot_file import bot, send_message_if_applicable
+
 generic_insults = [
 "If laughter is the best medicine, your face must be curing the world.",
 "You're so ugly, you scared the crap out of the toilet.",
@@ -116,7 +118,7 @@ async def get_insult_message(user, message):
     if random_number < 25:
         return "Im too tired right now, make up your own insults."
     if user.id == DIARMAID_ID:
-        insult_message = await get_diarmaid_insult(user)
+        insult_message = await get_diarmaid_insult()
     elif user.id == EIMEAR_ID:
         insult_message = await get_eimear_insult(user, message)
     elif user.id == BOT_ID:
@@ -135,3 +137,12 @@ async def get_generic_insult_message(user):
     insult_message = random.randint(0, len(generic_insults) - 1)
     insult_message = f"Hey {user.mention}, {generic_insults[insult_message].lower()}"
     return insult_message
+
+@bot.command(help="Get me to insult people!")
+async def insult(ctx):
+    users_to_insult = ctx.message.mentions
+    msg = ""
+    for user in users_to_insult:
+        insult_message = await get_insult_message(user, ctx.message)
+        msg += insult_message
+    await send_message_if_applicable(ctx, msg)

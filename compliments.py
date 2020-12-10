@@ -1,5 +1,8 @@
 from random import randint
 from users import DIARMAID_ID, BOT_ID, EIMEAR_ID
+
+from base_bot_file import bot, send_message_if_applicable
+
 generic_compliments = [
 "Your positivity is infectious. ",
 "You should be so proud of yourself.",
@@ -91,3 +94,14 @@ async def get_compliment(user):
         return msg
 
    return f"Ohh, {user.mention}, " + generic_compliments[randint(0, len(generic_compliments)-1)].lower()
+
+
+@bot.command(help="Tell me to compliment the selected user")
+async def compliment(ctx):
+    users_to_compliment = ctx.message.mentions
+    msg = ""
+
+    for user in users_to_compliment:
+         compliment = await get_compliment(user)
+         msg += compliment + "\n"
+    await send_message_if_applicable(ctx, msg)

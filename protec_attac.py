@@ -1,3 +1,5 @@
+from base_bot_file import bot, send_message_if_applicable
+
 async def get_protec_message(message):
     mentioned_users = message.mentions
     if mentioned_users:
@@ -17,3 +19,13 @@ async def get_attac_message(message):
     else:
         msg = "I ATTAC \n"
     return msg
+
+@bot.command(help="ATTAC")
+async def attac(ctx):
+    message = await get_attac_message(ctx.message)
+    await send_message_if_applicable(ctx, message)
+
+@bot.command(help="PROTEC")
+async def protec(ctx):
+    message = await get_protec_message(ctx.message)
+    await send_message_if_applicable(ctx, message)
