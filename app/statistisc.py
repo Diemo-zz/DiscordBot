@@ -1,5 +1,5 @@
-from base_bot_file import bot, get_bad_posts, send_message_if_applicable, get_authors
-from users import BOT_ID, COUNT_TO_A_MILLION_ID
+from app.base_bot_file import bot, send_message_if_applicable, get_bad_posts, get_authors
+from app.users import BOT_ID, COUNT_TO_A_MILLION_ID
 
 @bot.command(help="Get a list of statistics about who has posted in this channel")
 async def statistics(ctx):

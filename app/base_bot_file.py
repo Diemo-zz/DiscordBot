@@ -1,8 +1,11 @@
-from discord.ext import commands
-from users import COUNT_TO_A_MILLION_ID, BOT_ID, TEST_CHANNEL_ID
 import datetime
 
-bot = commands.Bot(command_prefix="!")
+from discord.ext import commands
+
+from app.users import COUNT_TO_A_MILLION_ID
+
+bot = commands.Bot(command_prefix="!", case_insensitive=True)
+
 
 async def send_message_if_applicable(ctx, msg):
     if not msg:

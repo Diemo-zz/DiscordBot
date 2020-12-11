@@ -1,12 +1,16 @@
-from base_bot_file import bot, send_message_if_applicable
-from users import BOT_ID, EIMEAR_ID
-from utils import get_random_member
+from app.base_bot_file import bot, send_message_if_applicable
+from app.users import BOT_ID, EIMEAR_ID
+from app.utils import get_random_member
 from random import randint
 
 @bot.command(help = "No explanation needed - just ask me what you want to suck")
 async def suck(ctx):
     msg = f"Fuck off {ctx.message.author.mention}, I aint sucking shit!"
-    await send_message_if_applicable(msg)
+    await send_message_if_applicable(ctx, msg)
+
+@bot.command(help="alias for suck")
+async def suckmadick(ctx):
+    await suck(ctx)
 
 @bot.command(help = "Send someone to the bot to be upgraded!")
 async def upgrade(ctx):
@@ -28,8 +32,8 @@ async def upgrade(ctx):
                     msg += f"Attempting to upgrade user {user.mention}: selecting part \n"
                     msg += f"Attempting to upgrade their {get_random_member(upgrade_types)} by adding {get_random_member(upgrade_object)} \n"
                     msg += f"\n \n Buzzzz Whiirrrr Buzzz \n \n"
-                    if randint(0,100) < 75:
-                        msg += f"I don't think there should be so much blood. Oh well, pleasetry again later, provided you still have limbs left. \n"
+                    if randint(0, 100) < 75:
+                        msg += f"I don't think there should be so much blood. Oh well, please try again later, provided you still have limbs left. \n"
                     else:
                         msg += "Upgrade successful. I do hope you feel better. \n"
     await send_message_if_applicable(ctx, msg)

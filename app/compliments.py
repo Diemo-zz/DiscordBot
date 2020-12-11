@@ -1,7 +1,7 @@
 from random import randint
-from users import DIARMAID_ID, BOT_ID, EIMEAR_ID
+from app.users import DIARMAID_ID, BOT_ID, EIMEAR_ID
 
-from base_bot_file import bot, send_message_if_applicable
+from app.base_bot_file import bot, send_message_if_applicable
 
 generic_compliments = [
 "Your positivity is infectious. ",

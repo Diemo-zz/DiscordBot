@@ -1,4 +1,5 @@
-from base_bot_file import bot, send_message_if_applicable
+from app.base_bot_file import bot, send_message_if_applicable
+
 
 async def get_protec_message(message):
     mentioned_users = message.mentions

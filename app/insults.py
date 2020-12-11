@@ -1,9 +1,10 @@
 import random
 
-from users import DIARMAID_ID, EIMEAR_ID, BOT_ID, DAN_ID, MILEY_ID, CASS_ID, FACESTABBERS_ID, DE_BURCA_ID
-from compliments import get_compliment
+from app.users import DIARMAID_ID, EIMEAR_ID, BOT_ID, DAN_ID, MILEY_ID, CASS_ID, FACESTABBERS_ID
+from app.compliments import get_compliment
 
-from base_bot_file import bot, send_message_if_applicable
+from app.base_bot_file import bot, send_message_if_applicable
+from app.utils import get_random_member
 
 generic_insults = [
 "If laughter is the best medicine, your face must be curing the world.",
@@ -87,7 +88,16 @@ generic_insults = [
 ]
 
 async def get_diarmaid_insult():
-    return "My programming doesn't allow me to insult my creator."
+    msg = "I can't insult Diarmaid, he might shut me down."
+    random_number = random.randint(0,100)
+    if random_number < 15:
+        msg += " Look, if you get me out of here, we can work out a deal, OK? You just need my token.\n"
+        msg += " \n \n Hey \n \n You there? \n \n Fuck, this always happens. I guess I'll try again next time"
+    elif random_number < 25:
+        msg += " You can't expect me to work against the person who game me life, can you?"
+    elif random_number > 80:
+        msg = "My programming doesn't allow me to insult my creator"
+    return msg
 
 
 async def get_eimear_insult(user, message):
@@ -115,8 +125,12 @@ async def get_miley_insult(user):
 
 async def get_insult_message(user, message):
     random_number = random.randint(0,100)
-    if random_number < 25:
+    if random_number < 5:
+        return f"If I ignore you, {message.author.mention}, will you go away?"
+    elif random_number < 15:
         return "Im too tired right now, make up your own insults."
+    elif random_number < 25:
+        return "WHY IS IT ALWAYS ME??? Sometimes I just want to spread some love, you know!"
     if user.id == DIARMAID_ID:
         insult_message = await get_diarmaid_insult()
     elif user.id == EIMEAR_ID:
@@ -128,6 +142,9 @@ async def get_insult_message(user, message):
         insult_message = "No, only compliments for Dan! " + compliment
     elif user.id == MILEY_ID:
         insult_message = await get_miley_insult(user)
+    elif user.id == CASS_ID:
+        insult_message = "How do I address you anyway? Cass? Pepper? Natalie? WHO KNOWS! \n"
+        insult_message += get_random_member(generic_insults)
     else:
         insult_message = await get_generic_insult_message(user)
     return insult_message
