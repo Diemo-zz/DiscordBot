@@ -1,9 +1,9 @@
-
 from discord.ext import commands
-from app.users import BOT_ID, COUNT_TO_A_MILLION_ID
-from app.base_bot_file import send_message_to_channel_if_applicable, contains_integer
+from app.users import BOT_ID
+from app.base_bot_file import send_message_to_channel_if_applicable
 
-class ThatsWhatSheSaid(commands.Cog):
+
+class Sayings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -27,4 +27,13 @@ class ThatsWhatSheSaid(commands.Cog):
     async def thatswhatshesaid(self, message):
         msg = "Thats's what she said"
         await message.channel.send(msg)
+
+    @commands.command(help="No explanation needed - tell me what you want me to suck")
+    async def suck(self, message):
+        msg = f"Fuck off {message.author.mention}, I aint sucking shit!"
+        await send_message_to_channel_if_applicable(message.channel, msg)
+
+    @commands.command(help="alias for suck")
+    async def suckmadick(self, message):
+        await self.suck(message)
 

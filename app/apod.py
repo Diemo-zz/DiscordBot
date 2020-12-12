@@ -37,7 +37,7 @@ def download_apod_images():
 
 @bot.command(help="Display a pretty picture of SPACE! *Actual space not guaranteed")
 async def apod(ctx):
-    with open("/app/" + LINK_FILE_PATH, "r") as f:
+    with open("./app/" + LINK_FILE_PATH, "r") as f:
         links = f.readlines()
     link = get_random_member(links)
     await send_message_if_applicable(ctx, link)
