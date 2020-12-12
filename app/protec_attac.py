@@ -4,6 +4,7 @@ from app.users import BOT_ID,EIMEAR_ID
 from random import randint
 from app.utils import get_random_member
 
+
 class ProtecAttac(commands.Cog):
     def __init__(self, bot):
         self.bot= bot
