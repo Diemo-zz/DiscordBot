@@ -2,6 +2,7 @@ from app.base_bot_file import send_message_to_channel_if_applicable
 from discord.ext import commands
 from app.users import BOT_ID,EIMEAR_ID
 from random import randint
+from app.utils import get_random_member
 
 class ProtecAttac(commands.Cog):
     def __init__(self, bot):
@@ -63,12 +64,3 @@ async def get_attac_message(message):
         msg = "I ATTAC \n"
     return msg
 
-#@bot.command(help="ATTAC")
-#async def attac(ctx):
-#    message = await get_attac_message(ctx.message)
-#    await send_message_if_applicable(ctx, message)
-
-#@bot.command(help="PROTEC")
-#async def protec(ctx):
-#    message = await get_protec_message(ctx.message)
-#    await send_message_if_applicable(ctx, message)
