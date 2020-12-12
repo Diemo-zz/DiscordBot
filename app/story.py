@@ -14,7 +14,7 @@ async def tell_me_a_story(message):
         msg = stories[random.randint(0,len(stories)-1)]
     return msg
 
-@bot.command(help="Let me tell you a interesting and cool story!")
-async def story(ctx):
-    msg = await tell_me_a_story(ctx.message)
-    await send_message_if_applicable(ctx, msg)
+#@bot.command(help="Let me tell you a interesting and cool story!")
+#async def story(ctx):
+#    msg = await tell_me_a_story(ctx.message)
+#    await send_message_if_applicable(ctx, msg)

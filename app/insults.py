@@ -3,7 +3,6 @@ import random
 from app.users import DIARMAID_ID, EIMEAR_ID, BOT_ID, DAN_ID, MILEY_ID, CASS_ID, FACESTABBERS_ID
 from app.compliments import get_compliment
 
-from app.base_bot_file import bot, send_message_if_applicable
 from app.utils import get_random_member
 
 generic_insults = [
@@ -155,11 +154,3 @@ async def get_generic_insult_message(user):
     insult_message = f"Hey {user.mention}, {generic_insults[insult_message].lower()}"
     return insult_message
 
-@bot.command(help="Get me to insult people!")
-async def insult(ctx):
-    users_to_insult = ctx.message.mentions
-    msg = ""
-    for user in users_to_insult:
-        insult_message = await get_insult_message(user, ctx.message)
-        msg += insult_message
-    await send_message_if_applicable(ctx, msg)
