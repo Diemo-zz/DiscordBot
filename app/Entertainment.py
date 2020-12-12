@@ -44,36 +44,39 @@ class Entertainment(commands.Cog):
         self.bot = bot
 
     @commands.command(help="Display a pretty picture of SPACE! *Actual space not guaranteed")
-    async def apod(self, message):
+    async def apod(self, context):
+        message = context.message
         with open(LINK_FILE_PATH, "r") as f:
             links = f.readlines()
         link = get_random_member(links)
-        await send_message_to_channel_if_applicable(message.channel, link)
+        await send_message_to_channel_if_applicable(message, link)
 
     @commands.command(help="Let me tell you a interesting and cool story!")
-    async def story(self, message):
+    async def story(self, context):
+        message = context.message
         msg = await tell_me_a_story(message)
-        await send_message_to_channel_if_applicable(message.channel, msg)
+        await send_message_to_channel_if_applicable(message, msg)
 
 
     @commands.command(help="Get me to insult people!")
-    async def insult(self, message):
+    async def insult(self, context):
+        message = context.message
         users_to_insult = message.mentions
         msg = ""
         for user in users_to_insult:
             insult_message = await get_insult_message(user, message)
             msg += insult_message
-        await send_message_to_channel_if_applicable(message.channel, msg)
-
+        await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command(help="Tell me to compliment the selected user")
-    async def compliment(self, message):
+    async def compliment(self, context):
+        message = context.message
         users_to_compliment = message.mentions
         msg = ""
         for user in users_to_compliment:
             compliment = await get_compliment(user)
             msg += compliment + "\n"
-        await send_message_to_channel_if_applicable(message.channel, msg)
+        await send_message_to_channel_if_applicable(message, msg)
 
 
 if __name__ == "__main__":
