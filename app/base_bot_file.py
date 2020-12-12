@@ -2,7 +2,7 @@ import datetime
 
 from discord.ext import commands
 
-from app.users import COUNT_TO_A_MILLION_ID
+from app.users import COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True)
 
@@ -10,16 +10,23 @@ bot = commands.Bot(command_prefix="!", case_insensitive=True)
 async def send_message_if_applicable(ctx, msg):
     if not msg:
         return
-    if ctx.message.channel.id in [COUNT_TO_A_MILLION_ID]:
-        messages = await ctx.message.channel.history(limit=500).flatten()
+    message = ctx.message
+    await send_message_to_channel_if_applicable(message, msg)
+
+async def send_message_to_channel_if_applicable(message, msg):
+    channel = message.channel
+    if channel.id in [COUNT_TO_A_MILLION_ID]:
+        messages = await channel.history(limit=1000).flatten()
         my_last_message = messages[0]
         current_time = datetime.datetime.now()
         my_last_message_time = my_last_message.created_at
         time_difference = current_time - my_last_message_time
         if time_difference.days < 1:
+            print("TIME DIFFERENCE", time_difference)
+            print(current_time, my_last_message_time)
             return
 
-        split_message = ctx.message.content.split()
+        split_message = message.content.split()
         last_integer = None
         for c in split_message:
             try:
@@ -32,7 +39,7 @@ async def send_message_if_applicable(ctx, msg):
         else:
             msg = ""
     if msg:
-        await ctx.message.channel.send(msg)
+        await channel.send(msg)
 
 
 async def get_bad_posts(messages):
@@ -49,6 +56,22 @@ async def get_bad_posts(messages):
         if not contains_integer:
             bad_posts += 1
     return bad_posts
+
+
+async def contains_integer(message_content):
+    contents = message_content.split()
+    contains_integer = False
+    for c in contents:
+        try:
+            i = int(c)
+            contains_integer = True
+            break
+        except:
+            pass
+    if contains_integer:
+        return i
+    else:
+        return None
 
 
 async def get_authors(messages):

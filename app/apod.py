@@ -1,4 +1,4 @@
-from app.base_bot_file import bot
+from app.base_bot_file import bot, send_message_if_applicable
 from bs4 import BeautifulSoup
 import urllib.request
 import re
@@ -35,13 +35,12 @@ def download_apod_images():
                 pass
 
 
-
 @bot.command(help="Display a pretty picture of SPACE! *Actual space not guaranteed")
 async def apod(ctx):
     with open("/app/" + LINK_FILE_PATH, "r") as f:
         links = f.readlines()
     link = get_random_member(links)
-    await ctx.message.channel.send(link)
+    await send_message_if_applicable(ctx, link)
 
     #print(onlyfiles)
     #with open("APODImages/ap201210.html", "rb") as file:

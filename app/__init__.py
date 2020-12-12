@@ -8,6 +8,11 @@ import app.thatswhatshesaid
 import app.upgrade
 import app.thatswhatshesaid
 import app.apod
+from app.edit_message import ThatsWhatSheSaid
+from app.protec_attac import ProtecAttac
+
+bot.add_cog(ProtecAttac(bot))
+bot.add_cog(ThatsWhatSheSaid(bot))
 
 
 
