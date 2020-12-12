@@ -1,18 +1,25 @@
 from app.base_bot_file import bot, send_message_if_applicable, get_bad_posts, get_authors
 from app.users import BOT_ID, COUNT_TO_A_MILLION_ID
+from discord.ext import commands
 
-@bot.command(help="Get a list of statistics about who has posted in this channel")
-async def statistics(ctx):
-    messages = await ctx.message.channel.history(limit=1e6).flatten()
-    non_bot_messages = list(filter(lambda x: x.author.id != BOT_ID, messages))
-    msg = f"There have been {len(messages)} total messages sent in this channel (including me). \n"
-    msg += f"There have been {len(non_bot_messages)} non-bot messages in the channel. \n"
-    msg += await count_posts(non_bot_messages)
-    if ctx.message.channel.id in [COUNT_TO_A_MILLION_ID]:
-        bad_posts = await get_bad_posts(non_bot_messages)
-        msg += f"There have been {bad_posts} gifs posted to date in this channel. \n \n"
-        msg += f"Disclaimer: I assume all posts which don't contain an integer are gifs, I am sure that Diarmaid will get around to programming something better soon."
-    await send_message_if_applicable(ctx, msg)
+class Information(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+
+
+    @commands.command(help="Get a list of statistics about who has posted in this channel")
+    async def statistics(self, ctx):
+        messages = await ctx.message.channel.history(limit=1e6).flatten()
+        non_bot_messages = list(filter(lambda x: x.author.id != BOT_ID, messages))
+        msg = f"There have been {len(messages)} total messages sent in this channel (including me). \n"
+        msg += f"There have been {len(non_bot_messages)} non-bot messages in the channel. \n"
+        msg += await count_posts(non_bot_messages)
+        if ctx.message.channel.id in [COUNT_TO_A_MILLION_ID]:
+            bad_posts = await get_bad_posts(non_bot_messages)
+            msg += f"There have been {bad_posts} gifs posted to date in this channel. \n \n"
+            msg += f"Disclaimer: I assume all posts which don't contain an integer are gifs, I am sure that Diarmaid will get around to programming something better soon."
+        await send_message_if_applicable(ctx, msg)
 
 
 async def count_posts(non_bot_messages):

@@ -2,7 +2,7 @@ import datetime
 
 from discord.ext import commands
 
-from app.users import COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID
+from app.users import COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID, BOT_ID
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True)
 
@@ -17,14 +17,14 @@ async def send_message_to_channel_if_applicable(message, msg):
     channel = message.channel
     if channel.id in [COUNT_TO_A_MILLION_ID]:
         messages = await channel.history(limit=1000).flatten()
-        my_last_message = messages[0]
-        current_time = datetime.datetime.now()
-        my_last_message_time = my_last_message.created_at
-        time_difference = current_time - my_last_message_time
-        if time_difference.days < 1:
-            print("TIME DIFFERENCE", time_difference)
-            print(current_time, my_last_message_time)
-            return
+        messages = list(filter(lambda x: x.author.id == BOT_ID, messages))
+        if messages:
+            my_last_message = messages[0]
+            current_time = datetime.datetime.now()
+            my_last_message_time = my_last_message.created_at
+            time_difference = current_time - my_last_message_time
+            if time_difference.days < 1:
+                return
 
         split_message = message.content.split()
         last_integer = None

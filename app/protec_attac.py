@@ -3,6 +3,7 @@ from discord.ext import commands
 from app.users import BOT_ID,EIMEAR_ID
 from random import randint
 from app.utils import get_random_member
+from app.databse import database, users, get_user_from_database
 
 
 class ProtecAttac(commands.Cog):
@@ -10,17 +11,68 @@ class ProtecAttac(commands.Cog):
         self.bot= bot
 
     @commands.command()
-    async def attac(self, message):
-        m = await get_attac_message(message)
-        await send_message_to_channel_if_applicable(message.channel, m)
+    async def info(self, context):
+        message = context.message
+        mentions = message.mentions
+        if not mentions:
+            mentions = [message.author]
+        msg = ""
+        for m in mentions:
+            user = await get_user_from_database(m)
+            msg += f"User {m.mention} has {user.health} health, {user.defense} defense and {user.attack} attack. \n"
+        await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command()
-    async def protec(self, message):
-        m = await get_protec_message(message)
-        await send_message_to_channel_if_applicable(message.channel, m)
+    async def heal(self, context):
+        message = context.message
+        mentions = message.mentions
+        if not mentions:
+            mentions = [message.author]
+        msg = ""
+        for m in mentions:
+            user_results = await get_user_from_database(m)
+            if user_results.health != 100:
+                command = users.update().where(users.c.id==user_results.id, ).values(health=100)
+                await database.execute(command)
+            msg += f"Healed users {m.mention} to 100 hitpoints!\n"
+        await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command()
-    async def upgrade(self, message):
+    async def attac(self, context):
+        message = context.message
+        if not message.mentions:
+            await send_message_to_channel_if_applicable(message.channel, "Nobody to attack!")
+        msg = ""
+        author = await get_user_from_database(message.author)
+
+        for m in message.mentions:
+            user_information = await get_user_from_database(m)
+            my_attack = author.attack
+            your_defense = author.defense
+            ration = my_attack/your_defense
+            amount = randint(0,10)
+            amount = amount*ration
+            msg += f"Attacking {m.mention} - did {amount:.2f} damage\n"
+            msg += f"User {m.mention} now has {user_information.health-amount:.2f} health left."
+            command = users.update().where(users.c.id == m.id).values(health=user_information.health - amount)
+            await database.execute(command)
+        await send_message_to_channel_if_applicable(message, msg)
+
+    @commands.command()
+    async def protec(self, context):
+        message = context.message
+        mentions = message.mentions
+        msg = ""
+        for m in mentions:
+            user = await get_user_from_database(m)
+            command = users.update().where(users.c.id == m.id).values(defense=user.defense +10)
+            await database.execute(command)
+            msg += f"I protec - Defense upgraded to {user.defense+10:.2f} for {m.mention} \n"
+        await send_message_to_channel_if_applicable(message, msg)
+
+    @commands.command()
+    async def upgrade(self, context):
+        message = context.message
         mentions = message.mentions
         if not mentions:
             msg = f"""Who do you want me to upgrade? Make sure to mention them like this, {message.author.mention}."""
@@ -45,23 +97,12 @@ class ProtecAttac(commands.Cog):
                             msg += "Upgrade successful. I do hope you feel better. \n"
         await send_message_to_channel_if_applicable(message.channel, msg)
 
-async def get_protec_message(message):
-    mentioned_users = message.mentions
-    if mentioned_users:
-        msg = ""
-        for user in mentioned_users:
-            msg += f"KEINE SORGE {user.mention}, I PROTEC U"
-    else:
-        msg = "I PROTEC \n"
-    return msg
+    @commands.command()
+    async def bd(self, ctx):
+        await database.connect()
+        print("database connected")
 
-async def get_attac_message(message):
-    mentioned_users = message.mentions
-    if mentioned_users:
-        msg = ""
-        for user in mentioned_users:
-            msg += f"VIELE SORGE {user.mention}, I ATTAC"
-    else:
-        msg = "I ATTAC \n"
-    return msg
+    @commands.command()
+    async def sd(self, ctx):
+        await database.disconnect()
 
