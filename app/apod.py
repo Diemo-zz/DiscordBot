@@ -1,15 +1,14 @@
-from app.base_bot_file import bot, send_message_if_applicable
+from app.base_bot_file import send_message_to_channel_if_applicable
 from bs4 import BeautifulSoup
 import urllib.request
 import re
+from discord.ext import commands
 
 base_url = "https://apod.nasa.gov/apod/"
 from app.utils import get_random_member
-from os import listdir
-from os.path import isfile, join
 
-LINK_FILE_PATH = "APODImages/image_links.txt"
-def download_apod_images():
+LINK_FILE_PATH = "/app/APODImages/image_links.txt"
+def get_list_of_apod_urls():
     response = urllib.request.urlopen("https://apod.nasa.gov/apod/archivepixFull.html")
     soup = BeautifulSoup(response)
     links = soup.findAll('a', attrs={'href': re.compile("^ap.*\.html$")})
@@ -35,19 +34,17 @@ def download_apod_images():
                 pass
 
 
-@bot.command(help="Display a pretty picture of SPACE! *Actual space not guaranteed")
-async def apod(ctx):
-    with open("./app/" + LINK_FILE_PATH, "r") as f:
-        links = f.readlines()
-    link = get_random_member(links)
-    await send_message_if_applicable(ctx, link)
+class Entertainment(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    #print(onlyfiles)
-    #with open("APODImages/ap201210.html", "rb") as file:
-    #    content = discord.File(file)
-    #    print("HERE WE ARE")
-    #    await ctx.message.channel.send("https://apod.nasa.gov/apod/image/2009/PairsMoonPace.jpg")
+    @commands.command(help="Display a pretty picture of SPACE! *Actual space not guaranteed")
+    async def apod(self, message):
+        with open(LINK_FILE_PATH, "r") as f:
+            links = f.readlines()
+        link = get_random_member(links)
+        await send_message_to_channel_if_applicable(message.channel, link)
 
 
 if __name__ == "__main__":
-    download_apod_images()
+    get_list_of_apod_urls()
