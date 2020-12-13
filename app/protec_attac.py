@@ -6,13 +6,17 @@ from app.utils import get_random_member
 from app.databse import database, users, get_user_from_database
 
 
+BOTTLE_ROYAL_CHANNEL = 787481512013594674
+
 class ProtecAttac(commands.Cog):
     def __init__(self, bot):
         self.bot= bot
 
-    @commands.command()
+    @commands.command(help="Get information about mentioned players")
     async def info(self, context):
         message = context.message
+        if message.channel.id != BOTTLE_ROYAL_CHANNEL:
+            return
         mentions = message.mentions
         if not mentions:
             mentions = [message.author]
@@ -22,9 +26,11 @@ class ProtecAttac(commands.Cog):
             msg += f"User {m.mention} has {user.health} health, {user.defense} defense and {user.attack} attack. \n"
         await send_message_to_channel_if_applicable(message, msg)
 
-    @commands.command()
+    @commands.command(help="Instantly heal someone to full health")
     async def heal(self, context):
         message = context.message
+        if message.channel.id != BOTTLE_ROYAL_CHANNEL:
+            return
         mentions = message.mentions
         if not mentions:
             mentions = [message.author]
@@ -37,9 +43,11 @@ class ProtecAttac(commands.Cog):
             msg += f"Healed users {m.mention} to 100 hitpoints!\n"
         await send_message_to_channel_if_applicable(message, msg)
 
-    @commands.command()
+    @commands.command(help= "ATTAC")
     async def attac(self, context):
         message = context.message
+        if message.channel.id != BOTTLE_ROYAL_CHANNEL:
+            return
         if not message.mentions:
             await send_message_to_channel_if_applicable(message.channel, "Nobody to attack!")
         msg = ""
@@ -63,9 +71,11 @@ class ProtecAttac(commands.Cog):
             await database.execute(command)
         await send_message_to_channel_if_applicable(message, msg)
 
-    @commands.command()
+    @commands.command(help = "Protect someone by upgrading their defense")
     async def protec(self, context):
         message = context.message
+        if message.channel.id != BOTTLE_ROYAL_CHANNEL:
+            return
         mentions = message.mentions
         msg = ""
         for m in mentions:
@@ -75,9 +85,11 @@ class ProtecAttac(commands.Cog):
             msg += f"I protec - Defense upgraded to {user.defense+10:.2f} for {m.mention} \n"
         await send_message_to_channel_if_applicable(message, msg)
 
-    @commands.command()
+    @commands.command(help = "Upgrade your (or someone else's) attack or defense")
     async def upgrade(self, context):
         message = context.message
+        if message.channel.id != BOTTLE_ROYAL_CHANNEL:
+            return
         mentions = message.mentions
         if not mentions:
             msg = f"""Who do you want me to upgrade? Make sure to mention them like this, {message.author.mention}."""
@@ -105,18 +117,15 @@ class ProtecAttac(commands.Cog):
                     }
                     part = get_random_member(list(upgrade_parts.keys()))
                     body = get_random_member(list(body_parts.keys()))
-                    body = "arms"
-                    part = "Indiana Jones's whip"
 
                     if body_parts.get(body) == upgrade_parts.get(part):
-                        quips = ["I didn't think I could do it", "Who would have thought I could be a doctor", "Whats this, me healing?", "Oh God I hope that worked, oh god I hope that worked!"]
-                        msg += f"Successfully managed to upgrade {user.mention}."
-                        msg += get_random_member(quips)
-                        msg += f"Upgraded {upgrade_parts.get(part)} by 10"
+                        quips = ["I didn't think I could do it", "Who would have thought I could be a doctor? ", "Whats this, me healing?", "Oh God I hope that worked, oh god I hope that worked!"]
+                        msg += f"Successfully managed to upgrade {user.mention} by adding {part} to thier {body}."
+                        msg += get_random_member(quips) + ". "
+                        msg += f"Upgraded {upgrade_parts.get(part)} by 10. \n"
                         user_info = await get_user_from_database(user)
-                        update_dict = {upgrade_parts.get(part): getattr(user_info, upgrade_parts.get(part))+10 }
+                        update_dict = {upgrade_parts.get(part): getattr(user_info, upgrade_parts.get(part))+10}
                         query = users.update().where(users.c.id==user.id).values(**update_dict)
-                        print(query)
                         await database.execute(query)
                     else:
                         actions = [
@@ -128,16 +137,5 @@ class ProtecAttac(commands.Cog):
                         msg += f"\n \n Buzzzz Whiirrrr Buzzz \n \n"
                         msg += f"OH GOD WHY IS THERE SO MUCH BLOOD! "
                         msg += get_random_member(actions)
-                        msg += "Upgrade failed"
-
+                        msg += "Upgrade failed. \n"
         await send_message_to_channel_if_applicable(message, msg)
-
-    @commands.command()
-    async def bd(self, ctx):
-        await database.connect()
-        print("database connected")
-
-    @commands.command()
-    async def sd(self, ctx):
-        await database.disconnect()
-
