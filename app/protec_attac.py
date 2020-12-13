@@ -50,11 +50,16 @@ class ProtecAttac(commands.Cog):
             my_attack = author.attack
             your_defense = author.defense
             ration = my_attack/your_defense
-            amount = randint(0,10)
+            amount = randint(0, 10)
             amount = amount*ration
-            msg += f"Attacking {m.mention} - did {amount:.2f} damage\n"
-            msg += f"User {m.mention} now has {user_information.health-amount:.2f} health left."
-            command = users.update().where(users.c.id == m.id).values(health=user_information.health - amount)
+            new_health = user_information.health - amount
+            if new_health < 0:
+                msg = f"Oh wow, you killed him. Bye bye {m.mention}"
+                command = users.update().where(users.c.id == m.id).values(health=user_information.health - amount)
+            else:
+                msg += f"Attacking {m.mention} - did {amount:.2f} damage."
+                msg += f"User {m.mention} now has {user_information.health-amount:.2f} health left.\n"
+                command = users.update().where(users.c.id == m.id).values(health=user_information.health - amount)
             await database.execute(command)
         await send_message_to_channel_if_applicable(message, msg)
 
@@ -82,20 +87,50 @@ class ProtecAttac(commands.Cog):
             else:
                 msg = ""
                 for user in mentions:
-                    if user.id == EIMEAR_ID:
-                        msg += "I can't upgrade the Supreme Overlord"
+                    upgrade_parts = {
+                            "a giant robot gun": "attack",
+                            "a tiny Chihuahua": "attack",
+                            "medieval armour": "defense",
+                            "Indiana Jones's whip": "attack",
+                            "the Bob Dylan record 'Hurricane'": "defense",
+                            "the worlds worst children's book": "defense"
+                    }
+                    body_parts ={
+                        "face": "defense",
+                        "torso": "defense",
+                        "legs": "defense",
+                        "arms": "attack",
+                        "hands": "attack",
+                        "toungue": "attack"
+                    }
+                    part = get_random_member(list(upgrade_parts.keys()))
+                    body = get_random_member(list(body_parts.keys()))
+                    body = "arms"
+                    part = "Indiana Jones's whip"
+
+                    if body_parts.get(body) == upgrade_parts.get(part):
+                        quips = ["I didn't think I could do it", "Who would have thought I could be a doctor", "Whats this, me healing?", "Oh God I hope that worked, oh god I hope that worked!"]
+                        msg += f"Successfully managed to upgrade {user.mention}."
+                        msg += get_random_member(quips)
+                        msg += f"Upgraded {upgrade_parts.get(part)} by 10"
+                        user_info = await get_user_from_database(user)
+                        update_dict = {upgrade_parts.get(part): getattr(user_info, upgrade_parts.get(part))+10 }
+                        query = users.update().where(users.c.id==user.id).values(**update_dict)
+                        print(query)
+                        await database.execute(query)
                     else:
-                        upgrade_types = ["armour", "health", "defense", "speed", "charisma"]
-                        upgrade_object = ["a new heart", "a new shield", "a new consience", "a new face", "a new leg", "a repurposed radioactivce hand", "a giant robot",
-                                      "some cute puppies"]
+                        actions = [
+                            "Run away, run away, run away. \n",
+                            "Better help them up. \n"
+                        ]
                         msg += f"Attempting to upgrade user {user.mention}: selecting part \n"
-                        msg += f"Attempting to upgrade their {get_random_member(upgrade_types)} by adding {get_random_member(upgrade_object)} \n"
+                        msg += f"Attempting to upgrade their {body} by adding {part} \n"
                         msg += f"\n \n Buzzzz Whiirrrr Buzzz \n \n"
-                        if randint(0, 100) < 75:
-                            msg += f"I don't think there should be so much blood. Oh well, please try again later, provided you still have limbs left. \n"
-                        else:
-                            msg += "Upgrade successful. I do hope you feel better. \n"
-        await send_message_to_channel_if_applicable(message.channel, msg)
+                        msg += f"OH GOD WHY IS THERE SO MUCH BLOOD! "
+                        msg += get_random_member(actions)
+                        msg += "Upgrade failed"
+
+        await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command()
     async def bd(self, ctx):
