@@ -1,5 +1,5 @@
 from app.base_bot_file import bot, send_message_if_applicable, get_bad_posts, get_authors
-from app.users import BOT_ID, COUNT_TO_A_MILLION_ID
+from app.users import BOT_ID, COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID
 from discord.ext import commands
 
 class Information(commands.Cog):
@@ -15,10 +15,16 @@ class Information(commands.Cog):
         msg = f"There have been {len(messages)} total messages sent in this channel (including me). \n"
         msg += f"There have been {len(non_bot_messages)} non-bot messages in the channel. \n"
         msg += await count_posts(non_bot_messages)
-        if ctx.message.channel.id in [COUNT_TO_A_MILLION_ID]:
+        if ctx.message.channel.id in [COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID]:
             bad_posts = await get_bad_posts(non_bot_messages)
             msg += f"There have been {bad_posts} gifs posted to date in this channel. \n \n"
-            msg += f"Disclaimer: I assume all posts which don't contain an integer are gifs, I am sure that Diarmaid will get around to programming something better soon."
+            msg += f"Disclaimer: I assume all posts which don't contain an integer are gifs, that should be good enough for this bullshit."
+            last_message_time = messages[0].created_at
+            first_message_time = messages[-1].created_at
+            total_time_in_days = (last_message_time - first_message_time).days
+            time_to_1_million = total_time_in_days*1e6/len(messages)
+            msg += f"At this rate, it will take {int(time_to_1_million)} days (approx {time_to_1_million/30:0.2f} months or {time_to_1_million/365:.2f} years). \n"
+
         await send_message_if_applicable(ctx, msg)
 
 
