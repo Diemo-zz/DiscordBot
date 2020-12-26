@@ -72,7 +72,7 @@ class ProtecAttac(commands.Cog):
         if message.channel.id not in [BOTTLE_ROYAL_CHANNEL, TEST_CHANNEL_ID]:
             return
         if not message.mentions:
-            await send_message_to_channel_if_applicable(message.channel, "Nobody to attack!")
+            await send_message_to_channel_if_applicable(message, "Nobody to attack!")
         msg = ""
         author = await get_user_from_database(message.author)
         author_energy = author.energy
