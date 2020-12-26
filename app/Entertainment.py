@@ -80,5 +80,6 @@ class Entertainment(commands.Cog):
 
 
 if __name__ == "__main__":
+
     get_list_of_apod_urls()
 
