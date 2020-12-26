@@ -52,7 +52,6 @@ class ProtecAttac(commands.Cog):
             mentions = [message.author]
         msg = ""
         author = await get_user_from_database(message.author)
-        author_energy = author.energy
         for m in mentions:
             if author.energy < 100:
                 msg += "You need all of your energy to try to heal someone!"
@@ -60,9 +59,9 @@ class ProtecAttac(commands.Cog):
             user_results = await get_user_from_database(m)
             if user_results.health != 100:
                 command = users.update().where(users.c.id==user_results.id, ).values(health=100)
-                author_energy = 0
                 await database.execute(command)
                 command = users.update().where(users.c.id==author.id).values(energy = 0)
+                await database.execute(command)
             msg += f"Healed users {m.mention} to 100 hitpoints!\n"
         await send_message_to_channel_if_applicable(message, msg)
 
