@@ -98,6 +98,7 @@ class ProtecAttac(commands.Cog):
                 command = users.update().where(users.c.id == m.id).values(health=user_information.health - amount)
             await database.execute(command)
         command = users.update().where(users.c.id == author.id).values(energy = author_energy)
+        await database.execute(command)
         await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command(help = "Protect someone by upgrading their defense")
@@ -106,6 +107,8 @@ class ProtecAttac(commands.Cog):
         if message.channel.id in [BOTTLE_ROYAL_CHANNEL, TEST_CHANNEL_ID]:
             return
         mentions = message.mentions
+        if not mentions:
+            mentions = [message.author]
         author_information = await get_user_from_database(message.author)
         author_energy = author_information.energy
 
