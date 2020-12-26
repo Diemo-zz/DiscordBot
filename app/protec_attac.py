@@ -104,11 +104,12 @@ class ProtecAttac(commands.Cog):
     @commands.command(help = "Protect someone by upgrading their defense")
     async def protec(self, context):
         message = context.message
-        if message.channel.id in [BOTTLE_ROYAL_CHANNEL, TEST_CHANNEL_ID]:
+        if message.channel.id not in [BOTTLE_ROYAL_CHANNEL, TEST_CHANNEL_ID]:
             return
         mentions = message.mentions
         if not mentions:
             mentions = [message.author]
+        print(len(mentions))
         author_information = await get_user_from_database(message.author)
         author_energy = author_information.energy
 
