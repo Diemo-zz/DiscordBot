@@ -84,7 +84,7 @@ class ProtecAttac(commands.Cog):
                 author_energy = author_energy - 5
             user_information = await get_user_from_database(m)
             my_attack = author.attack
-            your_defense = author.defense
+            your_defense = max(user_information.defense, 1)
             ration = my_attack/your_defense
             amount = randint(0, 10)
             amount = amount*ration
