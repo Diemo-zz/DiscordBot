@@ -109,7 +109,6 @@ class ProtecAttac(commands.Cog):
         mentions = message.mentions
         if not mentions:
             mentions = [message.author]
-        print(len(mentions))
         author_information = await get_user_from_database(message.author)
         author_energy = author_information.energy
 
