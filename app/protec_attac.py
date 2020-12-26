@@ -38,8 +38,7 @@ class ProtecAttac(commands.Cog):
         msg = ""
         for m in mentions:
             user = await get_user_from_database(m)
-            msg += f"User {m.mention} has {user.health} health, {user.defense} defense and {user.attack} attack. \n"
-            msg += f"User {m.mention} has {user.energy} energy left."
+            msg += f"User {m.mention} has {user.health:.2f} health, {user.energy:.2f} energy, {user.defense} defense and {user.attack} attack. \n"
         await send_message_to_channel_if_applicable(message, msg)
 
     @commands.command(help="Instantly heal someone to full health")
