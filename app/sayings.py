@@ -11,9 +11,31 @@ class Sayings(commands.Cog):
     async def on_message(self, message):
         if message.author.id == BOT_ID:
             return
+        lower_case_contents = message.content.lower()
+        if "good bot" in lower_case_contents:
+            await send_message_to_channel_if_applicable(message, "Thanks")
+        if "bad bot" in lower_case_contents:
+            await send_message_to_channel_if_applicable(message, "I'm tring my best!")
         should_respond = await self.should_say_thats_what_she_said(message.content)
         if should_respond:
             await send_message_to_channel_if_applicable(message, "That's what she said")
+        if ("harumph" in message.content.lower()) or ("harrumph" in message.content.lower()):
+            await send_message_to_channel_if_applicable(message, "https://media1.giphy.com/media/xTiTnHz4LKeY7zNDvq/giphy.gif")
+        if any([BOT_ID == m.id for m in message.mentions]):
+            return_msg = ""
+            if "i know" in lower_case_contents:
+                return_msg += "You don't know anything! I'm made by a doctor you know!"
+                if "please" in lower_case_contents:
+                    return_msg += " I'm trying my best here, you know. I'm just a poor robot in a world where everyone hates machines.\n"
+            else:
+                return_msg += "Yes? "
+                if "?" in lower_case_contents:
+                    return_msg += "I'm to stupid to understand how to answer questions. "
+                if "please" in lower_case_contents:
+                    return_msg += "You are so polite to me! "
+                if "sorry" in lower_case_contents:
+                    return_msg += "Apology accepted. Now lets forget this ever happened!"
+            await send_message_to_channel_if_applicable(message, return_msg)
 
     async def should_say_thats_what_she_said(self, message_contents):
         message_contents = message_contents.lower()
