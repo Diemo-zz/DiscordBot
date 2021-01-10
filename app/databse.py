@@ -35,7 +35,7 @@ async def get_user_from_database(user):
     query = users.select().where(users.c.id == user.id)
     res = await database.fetch_one(query)
     if not res:
-        command = users.insert().values(id=user.id, name = user.name, attack= 10, defense=0, health=100, energy=100)
+        command = users.insert().values(id=user.id, name = user.name, attack= 10, defense=10, health=100, energy=100)
         await database.execute(command)
         query = users.select().where(users.c.id==user.id)
         res = await database.fetch_one(query)

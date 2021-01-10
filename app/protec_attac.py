@@ -84,13 +84,13 @@ class ProtecAttac(commands.Cog):
                 msg += f"Ohh I think you are too tired. Take a rest, try again later!"
                 continue
             else:
-                author_energy = author_energy - 5
+                author_energy = author_energy - 10
             user_information = await get_user_from_database(m)
             my_attack = author.attack
             your_defense = max(user_information.defense, 1)
-            ration = my_attack/your_defense
-            amount = randint(0, 10)
-            amount = amount*ration
+            ratio = my_attack/your_defense
+            amount = randint(0, 15)
+            amount = amount*ratio
             new_health = user_information.health - amount
             if new_health < 0:
                 msg = f"Oh wow, you killed him. Bye bye {m.mention}"
