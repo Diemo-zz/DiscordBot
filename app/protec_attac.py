@@ -73,6 +73,10 @@ class ProtecAttac(commands.Cog):
             await send_message_to_channel_if_applicable(message, "Nobody to attack!")
         msg = ""
         author = await get_user_from_database(message.author)
+        author_health = author.health
+        if author_health < 0:
+            await send_message_to_channel_if_applicable(message, "You are dead - the only thing you can do is heal.")
+            return
         author_energy = author.energy
 
         for m in message.mentions:
@@ -110,6 +114,10 @@ class ProtecAttac(commands.Cog):
             mentions = [message.author]
         author_information = await get_user_from_database(message.author)
         author_energy = author_information.energy
+        author_health = author_information.health
+        if author_health < 0:
+            await send_message_to_channel_if_applicable(message, "You are dead - the only thing you can do is heal.")
+            return
 
         msg = ""
         for m in mentions:
@@ -136,6 +144,10 @@ class ProtecAttac(commands.Cog):
         msg = ""
         author = message.author
         author = await get_user_from_database(author)
+        author_health = author.health
+        if author_health < 0:
+            await send_message_to_channel_if_applicable(message, "You are dead - the only thing you can do is heal.")
+            return
         author_energy = author.energy
         for user in mentions:
             if user.id == BOT_ID:
