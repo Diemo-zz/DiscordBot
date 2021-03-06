@@ -1,8 +1,11 @@
 from app.base_bot_file import bot, send_message_if_applicable, get_bad_posts, get_authors
-from app.users import BOT_ID, COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID
+from app.users import BOT_ID, COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID, CASS_ID
 from discord.ext import commands
 from discord import Embed
 import validators
+import re
+
+DONT_MESSAGE = [CASS_ID]
 
 class Information(commands.Cog):
     def __init__(self, bot):
@@ -26,10 +29,14 @@ class Information(commands.Cog):
             time_to_1_million = total_time_in_days*1e6/len(messages)
             msg += f"At this rate, it will take {int(time_to_1_million)} days (approx {time_to_1_million/30:0.2f} months or {time_to_1_million/365:.2f} years). \n"
 
-            count = 0
+            count = -1
             wrong_number = {}
             for m in reversed(messages):
+                count = count + 1
                 if validators.url(m.content):
+                    continue
+                custom_emojis = re.findall(r'<:\w*:\d*>', m.content)
+                if custom_emojis:
                     continue
                 content = m.content.split()
                 found = False
@@ -43,13 +50,17 @@ class Information(commands.Cog):
                         continue
                 if not found:
                     author = m.author
-                    wrong_number.setdefault(author, []).append(m)
-                count += 1
+                    d = {"message": m, "expected": count}
+                    wrong_number.setdefault(author, []).append(d)
             for author, bm in wrong_number.items():
+                if author.id in DONT_MESSAGE:
+                    continue
                 msg += f"You have {len(bm)} bad messages {author.mention}. These have been send to you in a private message."
                 embedVar = Embed(title=f"BAD Messages {channel.name}", description="Desc", color=0x00ff00)
-                for index, message in enumerate(bm):
-                    author_message = f"Find the message [here]({message.jump_url}) "
+                for index, d in enumerate(bm):
+                    message = d.get("message")
+                    expected = d.get("expected")
+                    author_message = f"Find the message [here]({message.jump_url}) - expected value is {expected}"
                     embedVar.add_field(name=f"Message {index}", value=author_message, inline=True)
                     if len(embedVar) > 5000:
                         await author.send(embed=embedVar)

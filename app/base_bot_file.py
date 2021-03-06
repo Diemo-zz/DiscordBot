@@ -12,7 +12,7 @@ async def send_message_if_applicable(ctx, msg):
     if not msg:
         return
     message = ctx.message
-    messages_to_send = [msg[i:i+1024] for i in range(0, len(msg), 1024)]
+    messages_to_send = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
     for m in messages_to_send:
         await send_message_to_channel_if_applicable(message, m)
 
