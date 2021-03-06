@@ -3,3 +3,4 @@ discord.py
 pydantic
 databases
 aiosqlite
+emoji
