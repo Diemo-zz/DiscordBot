@@ -1,19 +1,22 @@
 import datetime
 
 from discord.ext import commands
+from discord import Embed, Intents
 
 from app.users import COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID, BOT_ID
 
-bot = commands.Bot(command_prefix="!", case_insensitive=True)
+bot = commands.Bot(command_prefix="!", case_insensitive=True,  intents=Intents.all())
 
 
 async def send_message_if_applicable(ctx, msg):
     if not msg:
         return
     message = ctx.message
-    await send_message_to_channel_if_applicable(message, msg)
+    messages_to_send = [msg[i:i+1024] for i in range(0, len(msg), 1024)]
+    for m in messages_to_send:
+        await send_message_to_channel_if_applicable(message, m)
 
-async def send_message_to_channel_if_applicable(message, msg):
+async def send_message_to_channel_if_applicable(message, msg, embed=False):
     channel = message.channel
     if channel.id in [COUNT_TO_A_MILLION_ID]:
         messages = await channel.history(limit=1000).flatten()
@@ -39,7 +42,12 @@ async def send_message_to_channel_if_applicable(message, msg):
         else:
             msg = ""
     if msg:
-        await channel.send(msg)
+        if embed:
+            embedVar = Embed(title="Bot Message", description="A friendly message from your BOT", color=0x00ff00)
+            embedVar.add_field(name="Information", value=msg, inline=False)
+            await channel.send(embed=embedVar)
+        else:
+            await channel.send(msg)
 
 
 async def get_bad_posts(messages):

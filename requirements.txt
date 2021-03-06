@@ -4,3 +4,4 @@ pydantic
 databases
 aiosqlite
 emoji
+validators
