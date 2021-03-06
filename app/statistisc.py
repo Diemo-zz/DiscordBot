@@ -1,11 +1,11 @@
 from app.base_bot_file import bot, send_message_if_applicable, get_bad_posts, get_authors
-from app.users import BOT_ID, COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID, CASS_ID
+from app.users import BOT_ID, COUNT_TO_A_MILLION_ID, TEST_CHANNEL_ID, CASS_ID, SAZ_ID
 from discord.ext import commands
 from discord import Embed
 import validators
 import re
 
-DONT_MESSAGE = [CASS_ID]
+DONT_MESSAGE = [CASS_ID, SAZ_ID]
 
 class Information(commands.Cog):
     def __init__(self, bot):
