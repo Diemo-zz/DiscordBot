@@ -33,6 +33,7 @@ async def send_image(message, msg: APODImage):
     channel = message.channel
     if msg:
         cred = f"\nBy {msg.author.name} ({msg.author.email})"
-        embed = Embed(title=msg.title, description=msg.description + cred)
+        embed = Embed(title=f"{msg.title}", description=msg.description, url=msg.link)
+        embed.add_field(name="Credentials", value=cred, inline=True)
         embed.set_image(url=msg.url)
         await channel.send(embed=embed)
