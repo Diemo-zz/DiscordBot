@@ -98,7 +98,7 @@ def get_apod_links(force=False):
                 url=l.get("url"),
                 description=l.get("description"),
                 author=Author(name=l.get("author_name"), email=l.get("author_email")),
-                link=l.get("link", "")
+                link=l.get("link", ""),
             )
             for l in links
         ]
@@ -115,7 +115,7 @@ def get_apod_links(force=False):
                                 "title": l.title,
                                 "url": l.url,
                                 "description": l.description,
-                                "link": l.link
+                                "link": l.link,
                             }
                             for l in links
                         ]
