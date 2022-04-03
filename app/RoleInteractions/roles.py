@@ -5,12 +5,16 @@ import emoji
 import regex
 import random
 
+
 BOT_ID = 771058009454411857
+
+
 def get_random_member(list_in: List):
     if len(list_in) > 0:
         return list_in[int(random.random() * len(list_in))]
     else:
         return None
+
 
 def find_emojis(text):
     emoji_list = []
@@ -24,10 +28,11 @@ def find_emojis(text):
 class RolesMaster(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.watched_message_id = []
+        self.watched_message_ids = []
         self.roles_to_ignore = ["Admin", "@everyone"]
         self.message = "Generic Message"
         self.roles = {'MEE6': '🧪', "test": "🚙"}
+        self.initial_message = ""
 
     @commands.command(help="Print Roles")
     @commands.has_role("Admin")
@@ -35,17 +40,34 @@ class RolesMaster(commands.Cog):
         guild = context.message.guild
         roles = [r.name for r in guild.roles]
         await context.message.channel.send(f"Roles are: {roles}")
+        await context.message.channel.send(f"Emojis are: {self.roles}")
 
-    @commands.command()
+    @commands.command(help="Make a list of role name to emoji, starting on a new line for each role")
     @commands.has_role("Admin")
-    async def ar(self, context):
+    async def arl(self, context):
+        message = context.message.content
+        guild = context.message.guild
+        roles = [r.name for r in guild.roles]
+        roles_to_emojis = message.split("\n")
+        for text in roles_to_emojis[1:]:
+            print(text)
+            split = text.split(" ")
+            role = split[0]
+            e = split[1]
+            if role in roles:
+                self.roles[role] = e
+        await context.message.channel.send("Updated")
+
+    @commands.command(help="Add a single role and emoji")
+    @commands.has_role("Admin")
+    async def add_role(self, context):
         message = context.message
         emojis = find_emojis(message.content)
         if len(emojis) != 1:
             await message.channel.send("Unable to recognise Emoji")
             return
         words = message.content.split(" ")
-        words = [w for w in words if w not in emojis + ["!ar"]]
+        words = [w for w in words if w not in emojis + ["!add_role"]]
         if len(words) != 1:
             await message.channel.send("Unable to recognise role")
             return
@@ -60,7 +82,7 @@ class RolesMaster(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        if reaction.message.id not in self.watched_message_id or user.id == BOT_ID:
+        if reaction.message.id not in self.watched_message_ids or user.id == BOT_ID:
             return
         for k, v in self.roles.items():
             if v == str(reaction):
@@ -71,7 +93,7 @@ class RolesMaster(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
-        if reaction.message.id not in self.watched_message_id:
+        if reaction.message.id not in self.watched_message_ids:
             return
         user_roles = [r.name for r in user.roles]
         for k, v in self.roles.items():
@@ -80,42 +102,46 @@ class RolesMaster(commands.Cog):
                     role = get(user.guild.roles, name=k)
                     await user.remove_roles(role)
 
-    @commands.command()
+    @commands.command(help="Set the message to be shown in the roles posts. Bear in mind this is shown in each of the posts")
     @commands.has_role("Admin")
     async def set_message(self, context):
         message = context.message.content.lstrip("!set_message").strip()
         self.message = message
 
     @commands.command()
+    @commands.has_role("Admin")
+    async def set_initial_message(self, context):
+        message = context.message.content.lstrip("!set_initial_message").strip()
+        self.initial_message = message
+
+    @commands.command()
     async def initialise_roles(self, context):
         channel = context.message.channel
         guild = context.message.guild
-        for id in self.watched_message_id:
+        for id in self.watched_message_ids:
             msg = await channel.fetch_message(id)
             await msg.delete()
-        self.watched_message_id = []
-        print("AT LEASE TWE GOT THIS FAR")
+        self.watched_message_ids = []
         all_roles = [r.name for r in guild.roles]
         all_roles = [r for r in all_roles if r not in self.roles_to_ignore]
         unknown_roles = list(set(all_roles) - set(self.roles.keys()))
         for role in unknown_roles:
             random_emoji = get_random_member(list(emoji.UNICODE_EMOJI['en'].keys()))
             self.roles[role] = random_emoji
-        message = ""
+        message = self.initial_message
         roles = {}
-        for num, role in enumerate(self.roles):
-            if num % 20 == 0 and message:
+        for num, role in enumerate(self.roles, start=1):
+            if num % 20 == 0:
                 await self.send_role_message(message, roles, channel)
-                message = ""
+                message = self.message
                 roles = {}
-                print("WELL THIS HAPPENED ONCE")
-            message += f"{role}: {self.roles.get(role)}\n"
+            message += f"\n{role}: {self.roles.get(role)}"
             roles[role] = self.roles.get(role)
         await self.send_role_message(message, roles, channel)
 
     async def send_role_message(self, message, roles, channel):
-        test = await channel.send(f"{self.message}\n {message}")
-        self.watched_message_id.append(test.id)
+        test = await channel.send(f"{message}")
+        self.watched_message_ids.append(test.id)
         for role, e in roles.items():
             await test.add_reaction(e)
 
