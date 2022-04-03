@@ -50,7 +50,6 @@ class RolesMaster(commands.Cog):
         roles = [r.name for r in guild.roles]
         roles_to_emojis = message.split("\n")
         for text in roles_to_emojis[1:]:
-            print(text)
             split = text.split(" ")
             role = split[0]
             e = split[1]
